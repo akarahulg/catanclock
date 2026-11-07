@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Dark Wood / Charcoal Tabletop Background -->
+    <path
+        android:fillColor="#12100E"
+        android:pathData="M0,0h108v108h-108z" />
+
+    <!-- Subtle Outer Catan Hexagon Mesh Background Pattern -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#1F1812"
+        android:strokeWidth="1.5"
+        android:pathData="M54,12 L88,31.6 L88,70.4 L54,90 L20,70.4 L20,31.6 Z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#19130D"
+        android:strokeWidth="1"
+        android:pathData="M54,4 L96,28 L96,76 L54,100 L12,76 L12,28 Z" />
+</vector>

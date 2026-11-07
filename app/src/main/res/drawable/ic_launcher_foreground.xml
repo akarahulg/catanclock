@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Catan Hexagon Golden Frame -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFB74D"
+        android:strokeWidth="3.5"
+        android:pathData="M54,20 L82,36 L82,68 L54,84 L26,68 L26,36 Z" />
+
+    <!-- Catan Hexagon Inner Accent Glow -->
+    <path
+        android:fillColor="#1A1510"
+        android:strokeColor="#FF9800"
+        android:strokeWidth="1.2"
+        android:pathData="M54,23 L79,37.5 L79,66.5 L54,81 L29,66.5 L29,37.5 Z" />
+
+    <!-- Split-Flap Flip Clock Card Body -->
+    <path
+        android:fillColor="#222222"
+        android:strokeColor="#444444"
+        android:strokeWidth="1.2"
+        android:pathData="M35,37 h38 a4,4 0 0 1 4,4 v26 a4,4 0 0 1 -4,4 h-38 a4,4 0 0 1 -4,-4 v-26 a4,4 0 0 1 4,-4 z" />
+
+    <!-- Split Crease Line -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#0A0A0A"
+        android:strokeWidth="1.8"
+        android:pathData="M31,52 L77,52" />
+
+    <!-- Left and Right Hinge Pins -->
+    <path
+        android:fillColor="#FFB74D"
+        android:pathData="M32,52 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" />
+    <path
+        android:fillColor="#FFB74D"
+        android:pathData="M76,52 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" />
+
+    <!-- Electric Cyan 7-Segment / Square Digit "60" -->
+    <!-- Digit '6' -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M38,42 h10 v2 h-8 v4 h8 v10 h-10 v-16 z M40,50 h6 v6 h-6 z" />
+
+    <!-- Digit '0' -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M58,42 h10 v16 h-10 v-16 z M60,44 h6 v12 h-6 z" />
+
+</vector>
