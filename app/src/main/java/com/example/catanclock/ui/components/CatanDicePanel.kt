@@ -76,12 +76,14 @@ fun CatanDicePanel(
             onRollDice()
             coroutineScope.launch {
                 val rollJob = launch {
-                    for (step in 1..10) {
+                    // Flicker random values during the first 240ms ONLY
+                    for (step in 1..4) {
                         displayRedVal = Random.nextInt(1, 7)
                         displayYellowVal = Random.nextInt(1, 7)
                         displayEventVal = Random.nextInt(1, 7)
-                        delay(50)
+                        delay(60)
                     }
+                    // Lock onto final rolled results BEFORE 3D rotation lands!
                     displayRedVal = lastRoll?.first ?: Random.nextInt(1, 7)
                     displayYellowVal = lastRoll?.second ?: Random.nextInt(1, 7)
                     displayEventVal = lastEventRoll ?: Random.nextInt(1, 7)
@@ -185,27 +187,27 @@ fun CatanDicePanel(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 12.dp)
             ) {
-                // Red Die
+                // Red Die (Matching Red Border)
                 CatanDie(
                     value = displayRedVal,
                     dieColor = Color(0xFFD32F2F),
                     dotColor = Color.White,
-                    borderColor = Color(0xFFB71C1C),
+                    borderColor = Color(0xFFE53935),
                     rotationAngle = rotationRed.value,
                     scaleFactor = scaleAnim.value
                 )
 
-                // Yellow Die
+                // Yellow Die (Matching Yellow Border)
                 CatanDie(
                     value = displayYellowVal,
                     dieColor = Color(0xFFFFD600),
                     dotColor = Color(0xFF121212),
-                    borderColor = Color(0xFFF57F17),
+                    borderColor = Color(0xFFFFEA00),
                     rotationAngle = rotationYellow.value,
                     scaleFactor = scaleAnim.value
                 )
 
-                // Cities & Knights Event Die (when enabled)
+                // Cities & Knights Event Die (Matching Ivory Border)
                 if (isCitiesAndKnightsEnabled) {
                     EventDie(
                         value = displayEventVal,
@@ -247,7 +249,7 @@ fun EventDie(
                 scaleY = scaleFactor
             }
             .clip(RoundedCornerShape(16.dp))
-            .border(2.5.dp, Color(0xFFB0A8A0), RoundedCornerShape(16.dp)),
+            .border(2.5.dp, Color(0xFFE0D8C8), RoundedCornerShape(16.dp)),
         color = Color(0xFFF5F0E6), // Ivory / Cream Event Die
         shadowElevation = 8.dp
     ) {
