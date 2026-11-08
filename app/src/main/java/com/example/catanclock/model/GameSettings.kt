@@ -8,7 +8,8 @@ data class GameSettings(
     val soundEnabled: Boolean = true,
     val vibrationEnabled: Boolean = true,
     val numPlayers: Int = 4,
-    val zenLedColorHex: Long = 0xFF00E5FFL
+    val zenLedColorHex: Long = 0xFF00E5FFL,
+    val isCitiesAndKnightsEnabled: Boolean = false
 ) {
     companion object {
         val ZEN_COLOR_PRESETS = listOf(

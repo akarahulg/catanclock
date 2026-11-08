@@ -119,6 +119,13 @@ class CatanClockViewModel(application: Application) : AndroidViewModel(applicati
         _uiState.update { it.copy(isDicePanelVisible = false) }
     }
 
+    fun toggleCitiesAndKnights(enabled: Boolean) {
+        _uiState.update {
+            val newSettings = it.settings.copy(isCitiesAndKnightsEnabled = enabled)
+            it.copy(settings = newSettings)
+        }
+    }
+
     fun selectModeFromOpeningMenu(mode: ClockMode) {
         _uiState.update { current ->
             val newSettings = current.settings.copy(mode = mode)
@@ -243,7 +250,8 @@ class CatanClockViewModel(application: Application) : AndroidViewModel(applicati
                 isWarning10s = false,
                 roundNumber = 1,
                 turnCount = 1,
-                lastDiceRoll = null
+                lastDiceRoll = null,
+                lastEventDieRoll = null
             )
         }
         lastTickTimestamp = System.currentTimeMillis()
@@ -293,8 +301,12 @@ class CatanClockViewModel(application: Application) : AndroidViewModel(applicati
     fun rollDice() {
         val die1 = Random.nextInt(1, 7)
         val die2 = Random.nextInt(1, 7)
+        val eventDie = Random.nextInt(1, 7)
         _uiState.update {
-            it.copy(lastDiceRoll = Pair(die1, die2))
+            it.copy(
+                lastDiceRoll = Pair(die1, die2),
+                lastEventDieRoll = eventDie
+            )
         }
     }
 

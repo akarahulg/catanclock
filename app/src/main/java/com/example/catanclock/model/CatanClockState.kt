@@ -12,7 +12,8 @@ data class CatanClockState(
     val roundNumber: Int = 1,
     val turnCount: Int = 1,
     val settings: GameSettings = GameSettings(),
-    val lastDiceRoll: Pair<Int, Int>? = null
+    val lastDiceRoll: Pair<Int, Int>? = null,
+    val lastEventDieRoll: Int? = null
 ) {
     val activePlayer: Player get() = players[activePlayerIndex.coerceIn(0, players.lastIndex)]
 }

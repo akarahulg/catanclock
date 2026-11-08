@@ -80,7 +80,12 @@ fun CatanClockScreen(
                     if (state.isDicePanelVisible) {
                         CatanDicePanel(
                             lastRoll = state.lastDiceRoll,
+                            lastEventRoll = state.lastEventDieRoll,
+                            isCitiesAndKnightsEnabled = state.settings.isCitiesAndKnightsEnabled,
                             onRollDice = { viewModel.rollDice() },
+                            onToggleCitiesAndKnights = { enabled ->
+                                viewModel.toggleCitiesAndKnights(enabled)
+                            },
                             onClose = { viewModel.closeDicePanel() },
                             modifier = Modifier.weight(1f)
                         )

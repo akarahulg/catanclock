@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,17 +51,22 @@ import kotlin.random.Random
 @Composable
 fun CatanDicePanel(
     lastRoll: Pair<Int, Int>?,
+    lastEventRoll: Int?,
+    isCitiesAndKnightsEnabled: Boolean,
     onRollDice: () -> Unit,
+    onToggleCitiesAndKnights: (Boolean) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
     var displayRedVal by remember { mutableIntStateOf(lastRoll?.first ?: 3) }
     var displayYellowVal by remember { mutableIntStateOf(lastRoll?.second ?: 4) }
+    var displayEventVal by remember { mutableIntStateOf(lastEventRoll ?: 1) }
     var isRolling by remember { mutableStateOf(false) }
 
     val rotationRed = remember { Animatable(0f) }
     val rotationYellow = remember { Animatable(0f) }
+    val rotationEvent = remember { Animatable(0f) }
     val scaleAnim = remember { Animatable(1f) }
 
     val triggerRoll = {
@@ -72,10 +78,12 @@ fun CatanDicePanel(
                     for (step in 1..10) {
                         displayRedVal = Random.nextInt(1, 7)
                         displayYellowVal = Random.nextInt(1, 7)
+                        displayEventVal = Random.nextInt(1, 7)
                         delay(50)
                     }
                     displayRedVal = lastRoll?.first ?: Random.nextInt(1, 7)
                     displayYellowVal = lastRoll?.second ?: Random.nextInt(1, 7)
+                    displayEventVal = lastEventRoll ?: Random.nextInt(1, 7)
                 }
 
                 launch {
@@ -87,6 +95,10 @@ fun CatanDicePanel(
                     rotationYellow.snapTo(0f)
                 }
                 launch {
+                    rotationEvent.animateTo(360f, tween(500, easing = LinearOutSlowInEasing))
+                    rotationEvent.snapTo(0f)
+                }
+                launch {
                     scaleAnim.animateTo(1.18f, tween(250))
                     scaleAnim.animateTo(1f, tween(250))
                 }
@@ -94,6 +106,7 @@ fun CatanDicePanel(
                 rollJob.join()
                 displayRedVal = lastRoll?.first ?: displayRedVal
                 displayYellowVal = lastRoll?.second ?: displayYellowVal
+                displayEventVal = lastEventRoll ?: displayEventVal
                 isRolling = false
             }
         }
@@ -103,6 +116,9 @@ fun CatanDicePanel(
         if (lastRoll != null) {
             displayRedVal = lastRoll.first
             displayYellowVal = lastRoll.second
+        }
+        if (lastEventRoll != null) {
+            displayEventVal = lastEventRoll
         }
     }
 
@@ -122,7 +138,7 @@ fun CatanDicePanel(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Panel Header
+            // Panel Header & Dragon C&K Toggle Chip
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -145,18 +161,26 @@ fun CatanDicePanel(
                     )
                 }
 
-                IconButton(onClick = onClose) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close Panel",
-                        tint = Color.Gray
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FilterChip(
+                        selected = isCitiesAndKnightsEnabled,
+                        onClick = { onToggleCitiesAndKnights(!isCitiesAndKnightsEnabled) },
+                        label = { Text("🐉 C&K Dragon", fontSize = 11.sp) }
                     )
+
+                    IconButton(onClick = onClose) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close Panel",
+                            tint = Color.Gray
+                        )
+                    }
                 }
             }
 
             // Dice Display Row (Tapping anywhere rolls all dice!)
             Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 12.dp)
             ) {
@@ -179,12 +203,60 @@ fun CatanDicePanel(
                     rotationAngle = rotationYellow.value,
                     scaleFactor = scaleAnim.value
                 )
+
+                // Dragon C&K Event Die (when enabled)
+                if (isCitiesAndKnightsEnabled) {
+                    DragonEventDie(
+                        value = displayEventVal,
+                        rotationAngle = rotationEvent.value,
+                        scaleFactor = scaleAnim.value
+                    )
+                }
             }
 
             Text(
                 text = "Tap dice to roll",
                 fontSize = 12.sp,
                 color = Color.Gray
+            )
+        }
+    }
+}
+
+@Composable
+fun DragonEventDie(
+    value: Int,
+    rotationAngle: Float,
+    scaleFactor: Float
+) {
+    val dragonColor = when (value) {
+        1, 2, 3 -> Color(0xFFD32F2F) // Crimson Red Dragon (Barbarians Attack)
+        4 -> Color(0xFF1E88E5)       // Blue Dragon (Trade Progress)
+        5 -> Color(0xFF4CAF50)       // Green Dragon (Politics Progress)
+        6 -> Color(0xFFFFD600)       // Yellow Dragon (Science Progress)
+        else -> Color(0xFFD32F2F)
+    }
+
+    Surface(
+        modifier = Modifier
+            .size(76.dp)
+            .graphicsLayer {
+                rotationZ = rotationAngle
+                scaleX = scaleFactor
+                scaleY = scaleFactor
+            }
+            .clip(RoundedCornerShape(16.dp))
+            .border(2.5.dp, dragonColor, RoundedCornerShape(16.dp)),
+        color = Color(0xFFF5F0E6), // Ivory / Cream Event Die
+        shadowElevation = 8.dp
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "🐉",
+                fontSize = 42.sp
             )
         }
     }
@@ -201,7 +273,7 @@ fun CatanDie(
 ) {
     Surface(
         modifier = Modifier
-            .size(80.dp)
+            .size(76.dp)
             .graphicsLayer {
                 rotationZ = rotationAngle
                 scaleX = scaleFactor
