@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -138,7 +139,7 @@ fun CatanDicePanel(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Panel Header & Dragon C&K Toggle Chip
+            // Panel Header & C&K Toggle Chip
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -165,7 +166,7 @@ fun CatanDicePanel(
                     FilterChip(
                         selected = isCitiesAndKnightsEnabled,
                         onClick = { onToggleCitiesAndKnights(!isCitiesAndKnightsEnabled) },
-                        label = { Text("🐉 C&K Dragon", fontSize = 11.sp) }
+                        label = { Text("🛡 C&K Die", fontSize = 11.sp) }
                     )
 
                     IconButton(onClick = onClose) {
@@ -204,9 +205,9 @@ fun CatanDicePanel(
                     scaleFactor = scaleAnim.value
                 )
 
-                // Dragon C&K Event Die (when enabled)
+                // Cities & Knights Event Die (when enabled)
                 if (isCitiesAndKnightsEnabled) {
-                    DragonEventDie(
+                    EventDie(
                         value = displayEventVal,
                         rotationAngle = rotationEvent.value,
                         scaleFactor = scaleAnim.value
@@ -224,17 +225,17 @@ fun CatanDicePanel(
 }
 
 @Composable
-fun DragonEventDie(
+fun EventDie(
     value: Int,
     rotationAngle: Float,
     scaleFactor: Float
 ) {
-    val dragonColor = when (value) {
-        1, 2, 3 -> Color(0xFFD32F2F) // Crimson Red Dragon (Barbarians Attack)
-        4 -> Color(0xFF1E88E5)       // Blue Dragon (Trade Progress)
-        5 -> Color(0xFF4CAF50)       // Green Dragon (Politics Progress)
-        6 -> Color(0xFFFFD600)       // Yellow Dragon (Science Progress)
-        else -> Color(0xFFD32F2F)
+    val symbolColor = when (value) {
+        1, 2, 3 -> Color(0xFF1B1B1B) // Black Barbarian
+        4 -> Color(0xFF1E88E5)       // Blue Trade
+        5 -> Color(0xFF4CAF50)       // Green Politics
+        6 -> Color(0xFFFFD600)       // Yellow Science
+        else -> Color(0xFF1B1B1B)
     }
 
     Surface(
@@ -246,7 +247,7 @@ fun DragonEventDie(
                 scaleY = scaleFactor
             }
             .clip(RoundedCornerShape(16.dp))
-            .border(2.5.dp, dragonColor, RoundedCornerShape(16.dp)),
+            .border(2.5.dp, Color(0xFFB0A8A0), RoundedCornerShape(16.dp)),
         color = Color(0xFFF5F0E6), // Ivory / Cream Event Die
         shadowElevation = 8.dp
     ) {
@@ -254,9 +255,11 @@ fun DragonEventDie(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "🐉",
-                fontSize = 42.sp
+            Icon(
+                imageVector = Icons.Default.Shield,
+                contentDescription = null,
+                tint = symbolColor,
+                modifier = Modifier.size(44.dp)
             )
         }
     }
