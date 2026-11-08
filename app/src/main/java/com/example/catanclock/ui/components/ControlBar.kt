@@ -8,6 +8,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipNext
@@ -53,17 +55,21 @@ fun ControlBar(
             )
         }
 
-        // Restart Current Turn Symbol
-        IconButton(onClick = onRestartTurn) {
+        // Secondary Button: Pause/Resume in Zen Mode, Restart Player Turn in Match Mode
+        IconButton(onClick = if (isZenMode) onTogglePause else onRestartTurn) {
             Icon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = "Restart Turn",
+                imageVector = if (isZenMode) {
+                    if (state.isPaused) Icons.Default.PlayArrow else Icons.Default.Pause
+                } else {
+                    Icons.Default.Refresh
+                },
+                contentDescription = if (isZenMode) "Pause/Resume" else "Restart Player Turn",
                 tint = Color.LightGray,
                 modifier = Modifier.size(28.dp)
             )
         }
 
-        // Main Center Action Button Symbol
+        // Main Center Action Button Symbol (Restart in Zen Mode, Next Turn in Match Mode)
         FilledIconButton(
             onClick = onNextTurn,
             colors = IconButtonDefaults.filledIconButtonColors(
@@ -74,7 +80,7 @@ fun ControlBar(
         ) {
             Icon(
                 imageVector = if (isZenMode) Icons.Default.Refresh else Icons.Default.SkipNext,
-                contentDescription = "Action",
+                contentDescription = "Main Action",
                 tint = if (isZenMode) Color.Black else Color.White,
                 modifier = Modifier.size(32.dp)
             )

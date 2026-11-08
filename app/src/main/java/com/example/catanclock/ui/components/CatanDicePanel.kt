@@ -259,7 +259,7 @@ fun EventDie(
                 imageVector = Icons.Default.Shield,
                 contentDescription = null,
                 tint = symbolColor,
-                modifier = Modifier.size(44.dp)
+                modifier = Modifier.size(46.dp)
             )
         }
     }
@@ -290,7 +290,7 @@ fun CatanDie(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(10.dp),
+                .padding(9.dp),
             contentAlignment = Alignment.Center
         ) {
             val showTL = value in listOf(2, 3, 4, 5, 6)
@@ -340,7 +340,7 @@ fun CatanDie(
 fun DieDot(visible: Boolean, color: Color) {
     Box(
         modifier = Modifier
-            .size(11.dp)
+            .size(15.dp)
             .clip(CircleShape)
             .background(if (visible) color else Color.Transparent)
     )
