@@ -13,6 +13,18 @@ data class Player(
     val color: Color get() = Color(colorHex)
 
     companion object {
+        val COLOR_PALETTE = listOf(
+            0xFFE53935L, // Red
+            0xFF1E88E5L, // Blue
+            0xFFF5F5F5L, // White
+            0xFFFB8C00L, // Orange
+            0xFF4CAF50L, // Green
+            0xFF795548L, // Brown
+            0xFFFFD600L, // Yellow
+            0xFFAB47BCL, // Purple
+            0xFF00E5FFL  // Cyan
+        )
+
         val DEFAULT_PLAYERS = listOf(
             Player(id = 1, name = "Red", colorHex = 0xFFE53935L, bankTimeRemainingMs = 60_000L),
             Player(id = 2, name = "Blue", colorHex = 0xFF1E88E5L, bankTimeRemainingMs = 60_000L),

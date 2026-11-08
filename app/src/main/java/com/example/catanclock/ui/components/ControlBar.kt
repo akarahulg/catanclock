@@ -3,27 +3,23 @@ package com.example.catanclock.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.catanclock.model.CatanClockState
 import com.example.catanclock.model.ClockMode
 import com.example.catanclock.ui.theme.CatanPrimary
@@ -36,6 +32,7 @@ fun ControlBar(
     onRestartTurn: () -> Unit,
     onOpenDiceRoll: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenHomeMenu: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isZenMode = state.settings.mode == ClockMode.ZEN
@@ -43,66 +40,63 @@ fun ControlBar(
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Pause / Resume Button
-        IconButton(onClick = onTogglePause) {
+        // Home Menu Symbol
+        IconButton(onClick = onOpenHomeMenu) {
             Icon(
-                imageVector = if (state.isPaused) Icons.Default.PlayArrow else Icons.Default.Pause,
-                contentDescription = if (state.isPaused) "Resume" else "Pause",
-                tint = CatanPrimary
+                imageVector = Icons.Default.Home,
+                contentDescription = "Home Menu",
+                tint = CatanPrimary,
+                modifier = Modifier.size(28.dp)
             )
         }
 
-        // Restart Current Turn
+        // Restart Current Turn Symbol
         IconButton(onClick = onRestartTurn) {
             Icon(
                 imageVector = Icons.Default.Refresh,
                 contentDescription = "Restart Turn",
-                tint = Color.LightGray
+                tint = Color.LightGray,
+                modifier = Modifier.size(28.dp)
             )
         }
 
-        // Main Giant Action Button
-        Button(
+        // Main Center Action Button Symbol
+        FilledIconButton(
             onClick = onNextTurn,
-            colors = ButtonDefaults.buttonColors(
+            colors = IconButtonDefaults.filledIconButtonColors(
                 containerColor = mainButtonColor
             ),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .height(48.dp)
-                .weight(1f)
+            shape = CircleShape,
+            modifier = Modifier.size(54.dp)
         ) {
             Icon(
                 imageVector = if (isZenMode) Icons.Default.Refresh else Icons.Default.SkipNext,
-                contentDescription = null,
-                tint = if (isZenMode) Color.Black else Color.White
-            )
-            Text(
-                text = if (isZenMode) " RESTART TIMER" else " NEXT TURN",
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
-                color = if (isZenMode) Color.Black else Color.White
+                contentDescription = "Action",
+                tint = if (isZenMode) Color.Black else Color.White,
+                modifier = Modifier.size(32.dp)
             )
         }
 
-        // Roll Dice Dialog Button
+        // Roll Dice Panel Symbol
         IconButton(onClick = onOpenDiceRoll) {
             Icon(
                 imageVector = Icons.Default.Casino,
                 contentDescription = "Roll Dice",
-                tint = CatanPrimary
+                tint = CatanPrimary,
+                modifier = Modifier.size(28.dp)
             )
         }
 
-        // Settings Button
+        // Settings Symbol
         IconButton(onClick = onOpenSettings) {
             Icon(
                 imageVector = Icons.Default.Settings,
                 contentDescription = "Settings",
-                tint = Color.LightGray
+                tint = Color.LightGray,
+                modifier = Modifier.size(28.dp)
             )
         }
     }

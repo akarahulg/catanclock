@@ -17,8 +17,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.catanclock.ui.components.BigTimerDisplay
+import com.example.catanclock.ui.components.CatanDicePanel
 import com.example.catanclock.ui.components.ControlBar
-import com.example.catanclock.ui.components.DiceRollDialog
+import com.example.catanclock.ui.components.OpeningMenuScreen
 import com.example.catanclock.ui.components.PlayerBar
 import com.example.catanclock.ui.components.SettingsDialog
 import com.example.catanclock.ui.theme.CatanClockTheme
@@ -31,87 +32,99 @@ fun CatanClockScreen(
     val state by viewModel.uiState.collectAsState()
 
     var showSettingsDialog by remember { mutableStateOf(false) }
-    var showDiceDialog by remember { mutableStateOf(false) }
 
     CatanClockTheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            containerColor = MaterialTheme.colorScheme.background
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Top: Player Info Bar (shown in Match mode only)
-                PlayerBar(
-                    state = state,
-                    onSelectPlayer = { idx ->
-                        viewModel.nextTurn()
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Center: 7-Segment Digital Clock Display (Tap screen to restart / next turn)
-                BigTimerDisplay(
-                    state = state,
-                    onTapTimer = {
-                        if (state.isPaused) {
-                            viewModel.togglePauseResume()
-                        } else {
+        if (state.isOpeningMenuVisible) {
+            OpeningMenuScreen(
+                onSelectMode = { mode ->
+                    viewModel.selectModeFromOpeningMenu(mode)
+                }
+            )
+        } else {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                containerColor = MaterialTheme.colorScheme.background
+            ) { paddingValues ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Top: Player Info Bar (shown in Match mode only)
+                    PlayerBar(
+                        state = state,
+                        onSelectPlayer = { idx ->
                             viewModel.nextTurn()
                         }
-                    },
-                    modifier = Modifier.weight(1f)
-                )
+                    )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                // Bottom: Action Control Bar
-                ControlBar(
-                    state = state,
-                    onTogglePause = { viewModel.togglePauseResume() },
-                    onNextTurn = { viewModel.nextTurn() },
-                    onRestartTurn = { viewModel.restartCurrentTurn() },
-                    onOpenDiceRoll = {
-                        if (state.lastDiceRoll == null) {
-                            viewModel.rollDice()
-                        }
-                        showDiceDialog = true
-                    },
-                    onOpenSettings = {
-                        if (!state.isPaused) {
+                    // Split Screen: Upper Section = 3D Flip Clock Display
+                    BigTimerDisplay(
+                        state = state,
+                        onTapTimer = {
+                            viewModel.nextTurn()
+                        },
+                        onDoubleTapTimer = {
                             viewModel.togglePauseResume()
+                        },
+                        modifier = Modifier.weight(if (state.isDicePanelVisible) 1.1f else 1f)
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Split Screen: Lower Section = Catan Dice Roller Panel (when toggled on)
+                    if (state.isDicePanelVisible) {
+                        CatanDicePanel(
+                            lastRoll = state.lastDiceRoll,
+                            onRollDice = { viewModel.rollDice() },
+                            onClose = { viewModel.closeDicePanel() },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    // Bottom: Action Control Bar
+                    ControlBar(
+                        state = state,
+                        onTogglePause = { viewModel.togglePauseResume() },
+                        onNextTurn = { viewModel.nextTurn() },
+                        onRestartTurn = { viewModel.restartCurrentTurn() },
+                        onOpenDiceRoll = {
+                            if (state.lastDiceRoll == null) {
+                                viewModel.rollDice()
+                            }
+                            viewModel.toggleDicePanel()
+                        },
+                        onOpenSettings = {
+                            if (!state.isPaused) {
+                                viewModel.togglePauseResume()
+                            }
+                            showSettingsDialog = true
+                        },
+                        onOpenHomeMenu = {
+                            viewModel.openOpeningMenu()
                         }
-                        showSettingsDialog = true
+                    )
+                }
+            }
+
+            // Settings Dialog
+            if (showSettingsDialog) {
+                SettingsDialog(
+                    state = state,
+                    onDismiss = { showSettingsDialog = false },
+                    onSaveSettings = { newSettings, playerNames, playerColors ->
+                        viewModel.updateSettings(newSettings, playerNames, playerColors)
+                    },
+                    onResetGame = {
+                        viewModel.resetGame()
                     }
                 )
             }
-        }
-
-        // Dialogs
-        if (showSettingsDialog) {
-            SettingsDialog(
-                state = state,
-                onDismiss = { showSettingsDialog = false },
-                onSaveSettings = { newSettings, playerNames ->
-                    viewModel.updateSettings(newSettings, playerNames)
-                },
-                onResetGame = {
-                    viewModel.resetGame()
-                }
-            )
-        }
-
-        if (showDiceDialog) {
-            DiceRollDialog(
-                lastRoll = state.lastDiceRoll,
-                onRollDice = { viewModel.rollDice() },
-                onDismiss = { showDiceDialog = false }
-            )
         }
     }
 }

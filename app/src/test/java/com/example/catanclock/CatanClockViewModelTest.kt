@@ -14,11 +14,12 @@ class CatanClockStateTest {
     @Test
     fun testDefaultStateValues() {
         val state = CatanClockState()
+        assertTrue(state.isOpeningMenuVisible)
         assertEquals(4, state.players.size)
         assertEquals(0, state.activePlayerIndex)
         assertEquals("Red", state.activePlayer.name)
         assertEquals(60_000L, state.remainingTurnTimeMs)
-        assertTrue(state.isPaused)
+        assertFalse(state.isPaused)
         assertFalse(state.isWarning10s)
         assertEquals(1, state.roundNumber)
         assertEquals(1, state.turnCount)

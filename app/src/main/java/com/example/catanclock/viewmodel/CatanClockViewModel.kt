@@ -43,7 +43,7 @@ class CatanClockViewModel(application: Application) : AndroidViewModel(applicati
                 lastTickTimestamp = now
 
                 val currentState = _uiState.value
-                if (!currentState.isPaused) {
+                if (!currentState.isPaused && !currentState.isOpeningMenuVisible) {
                     onTimerTick(delta)
                 }
             }
@@ -111,6 +111,33 @@ class CatanClockViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun toggleDicePanel() {
+        _uiState.update { it.copy(isDicePanelVisible = !it.isDicePanelVisible) }
+    }
+
+    fun closeDicePanel() {
+        _uiState.update { it.copy(isDicePanelVisible = false) }
+    }
+
+    fun selectModeFromOpeningMenu(mode: ClockMode) {
+        _uiState.update { current ->
+            val newSettings = current.settings.copy(mode = mode)
+            current.copy(
+                isOpeningMenuVisible = false,
+                settings = newSettings,
+                remainingTurnTimeMs = newSettings.turnDurationSeconds * 1000L,
+                isUsingTimeBank = false,
+                isWarning10s = false,
+                isPaused = false
+            )
+        }
+        lastTickTimestamp = System.currentTimeMillis()
+    }
+
+    fun openOpeningMenu() {
+        _uiState.update { it.copy(isOpeningMenuVisible = true, isPaused = true) }
+    }
+
     fun togglePauseResume() {
         _uiState.update {
             val nextPaused = !it.isPaused
@@ -128,9 +155,10 @@ class CatanClockViewModel(application: Application) : AndroidViewModel(applicati
                 remainingTurnTimeMs = newSettings.turnDurationSeconds * 1000L,
                 isUsingTimeBank = false,
                 isWarning10s = false,
-                isPaused = true
+                isPaused = false
             )
         }
+        lastTickTimestamp = System.currentTimeMillis()
     }
 
     fun nextTurn() {
@@ -186,7 +214,8 @@ class CatanClockViewModel(application: Application) : AndroidViewModel(applicati
             it.copy(
                 remainingTurnTimeMs = it.settings.turnDurationSeconds * 1000L,
                 isUsingTimeBank = false,
-                isWarning10s = false
+                isWarning10s = false,
+                isPaused = false
             )
         }
         lastTickTimestamp = System.currentTimeMillis()
@@ -210,28 +239,34 @@ class CatanClockViewModel(application: Application) : AndroidViewModel(applicati
                 activePlayerIndex = 0,
                 remainingTurnTimeMs = settings.turnDurationSeconds * 1000L,
                 isUsingTimeBank = false,
-                isPaused = true,
+                isPaused = false,
                 isWarning10s = false,
                 roundNumber = 1,
                 turnCount = 1,
                 lastDiceRoll = null
             )
         }
+        lastTickTimestamp = System.currentTimeMillis()
     }
 
-    fun updateSettings(newSettings: GameSettings, newPlayerNames: List<String>) {
+    fun updateSettings(
+        newSettings: GameSettings,
+        newPlayerNames: List<String>,
+        newPlayerColors: List<Long> = emptyList()
+    ) {
         val currentPlayers = _uiState.value.players
         val bankMs = newSettings.bankDurationSeconds * 1000L
 
         val updatedPlayers = List(newSettings.numPlayers) { idx ->
-            val name = newPlayerNames.getOrNull(idx) ?: Player.DEFAULT_PLAYERS[idx].name
-            val defaultPlayer = Player.DEFAULT_PLAYERS[idx % Player.DEFAULT_PLAYERS.size]
+            val name = newPlayerNames.getOrNull(idx) ?: Player.DEFAULT_PLAYERS[idx % Player.DEFAULT_PLAYERS.size].name
+            val defaultColor = Player.DEFAULT_PLAYERS[idx % Player.DEFAULT_PLAYERS.size].colorHex
+            val colorHex = newPlayerColors.getOrNull(idx) ?: defaultColor
             val existingPlayer = currentPlayers.getOrNull(idx)
 
             Player(
                 id = idx + 1,
                 name = name,
-                colorHex = defaultPlayer.colorHex,
+                colorHex = colorHex,
                 bankTimeRemainingMs = existingPlayer?.bankTimeRemainingMs ?: bankMs,
                 turnsCompleted = existingPlayer?.turnsCompleted ?: 0,
                 totalTimeSpentMs = existingPlayer?.totalTimeSpentMs ?: 0L
@@ -249,15 +284,18 @@ class CatanClockViewModel(application: Application) : AndroidViewModel(applicati
                 remainingTurnTimeMs = newSettings.turnDurationSeconds * 1000L,
                 isUsingTimeBank = false,
                 isWarning10s = false,
-                isPaused = true
+                isPaused = false
             )
         }
+        lastTickTimestamp = System.currentTimeMillis()
     }
 
     fun rollDice() {
         val die1 = Random.nextInt(1, 7)
         val die2 = Random.nextInt(1, 7)
-        _uiState.update { it.copy(lastDiceRoll = Pair(die1, die2)) }
+        _uiState.update {
+            it.copy(lastDiceRoll = Pair(die1, die2))
+        }
     }
 
     override fun onCleared() {
